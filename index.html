@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="70.3 Plan">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" id="app-icon">
+<link rel="manifest" id="pwa-manifest">
+<title>70.3 Tremblant</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0f;
+    --carbon: #111118;
+    --graphite: #1c1c28;
+    --steel: #2a2a3e;
+    --muted: #5a5a7a;
+    --silver: #9090b0;
+    --white: #f0f0f8;
+    --red: #e8273c;
+    --orange: #f57c2b;
+    --cyan: #00d4ff;
+    --green: #2ecc8a;
+    --gold: #f5c842;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 300; line-height: 1.6; overflow-x: hidden; }
+
+  .hero {
+    position: relative;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 60px;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(0,212,255,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 80% at 20% 80%, rgba(232,39,60,0.06) 0%, transparent 50%);
+  }
+  .hero-eyebrow { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.3em; color: var(--cyan); text-transform: uppercase; margin-bottom: 20px; opacity:0; animation: fadeUp 0.6s 0.1s forwards; }
+  .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(64px, 11vw, 140px); line-height: 0.9; margin-bottom: 28px; opacity:0; animation: fadeUp 0.7s 0.25s forwards; }
+  .hero-title span { color: var(--red); display: block; }
+  .hero-sub { font-size: 14px; color: var(--silver); max-width: 520px; margin-bottom: 48px; line-height: 1.7; opacity:0; animation: fadeUp 0.7s 0.4s forwards; }
+  .hero-accent { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); font-family: 'Bebas Neue', sans-serif; font-size: 240px; color: rgba(255,255,255,0.02); line-height: 1; pointer-events: none; }
+
+  .phase-strip { display: grid; grid-template-columns: 3fr 3fr 1fr 2fr 1fr; gap: 2px; margin: 0 60px 70px; opacity:0; animation: fadeUp 0.7s 0.55s forwards; }
+  .phase-cell { padding: 18px 22px; background: var(--graphite); }
+  .phase-weeks { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; }
+  .phase-name { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 0.05em; line-height: 1; }
+  .phase-desc { font-size: 11px; color: var(--silver); margin-top: 5px; line-height: 1.5; }
+
+  .section { padding: 70px 60px; border-top: 1px solid var(--graphite); }
+  .section-header { display: flex; align-items: baseline; gap: 20px; margin-bottom: 40px; }
+  .section-num { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.2em; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 0.02em; line-height: 1; }
+
+  /* WEEK CARDS */
+  .weeks-container { display: flex; flex-direction: column; gap: 3px; }
+  .week-card { background: var(--graphite); overflow: hidden; }
+  .week-card-header {
+    display: grid;
+    grid-template-columns: 90px 1fr auto auto;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 28px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .week-card-header:hover { background: var(--steel); }
+  .wk-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--muted); }
+  .wk-title { font-size: 14px; font-weight: 500; }
+  .wk-volume { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--silver); letter-spacing: 0.1em; }
+  .wk-badge { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; padding: 4px 10px; border: 1px solid currentColor; border-radius: 2px; white-space: nowrap; }
+  .badge-build1 { color: var(--orange); }
+  .badge-build2 { color: var(--red); }
+  .badge-recovery { color: var(--green); }
+  .badge-specific { color: var(--gold); }
+  .badge-taper { color: var(--cyan); }
+  .badge-race { color: var(--white); border-color: var(--white); }
+
+  .week-body { display: none; padding: 4px 28px 28px; }
+  .week-card.open .week-body { display: block; }
+
+  .days-grid { display: flex; flex-direction: column; gap: 0; }
+  .day-row { display: grid; grid-template-columns: 100px 1fr; gap: 20px; padding: 14px 0; border-top: 1px solid var(--steel); align-items: start; }
+  .day-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; padding-top: 4px; }
+  .day-content { display: flex; flex-direction: column; gap: 4px; }
+  .workout-line { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: var(--white); line-height: 1.4; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .ds { background: var(--cyan); }
+  .db { background: var(--orange); }
+  .dr { background: var(--red); }
+  .dg { background: var(--green); }
+  .dx { background: var(--steel); }
+  .workout-note { font-size: 11px; color: var(--silver); line-height: 1.5; margin-left: 14px; }
+
+  .week-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 20px; }
+  .summary-cell { background: var(--carbon); padding: 12px 16px; }
+  .summary-label { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+  .summary-val { font-family: 'Bebas Neue', sans-serif; font-size: 24px; line-height: 1; }
+
+  /* KEY SESSION CALLOUT */
+  .key-session { background: var(--carbon); border-left: 3px solid var(--gold); padding: 14px 18px; margin: 8px 0 4px; }
+  .key-session-label { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 4px; }
+  .key-session-text { font-size: 12px; color: var(--silver); line-height: 1.6; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.5s, transform 0.5s; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  footer { padding: 40px 60px; border-top: 1px solid var(--graphite); display: flex; justify-content: space-between; align-items: center; }
+  footer p { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.15em; }
+
+  /* DIET STYLES */
+  .calorie-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-bottom: 40px; }
+  .cal-card { background: var(--graphite); padding: 24px 28px; border-left: 3px solid var(--steel); }
+  .cal-card.easy { border-color: var(--green); }
+  .cal-card.normal { border-color: var(--cyan); }
+  .cal-card.hard { border-color: var(--red); }
+  .cal-type { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+  .cal-num { font-family: 'Bebas Neue', sans-serif; font-size: 56px; line-height: 1; color: var(--white); }
+  .cal-macros { display: flex; gap: 20px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--steel); }
+  .cal-macro { display: flex; flex-direction: column; gap: 2px; }
+  .cal-macro-val { font-family: 'Bebas Neue', sans-serif; font-size: 22px; line-height: 1; }
+  .cal-macro-lbl { font-family: 'Space Mono', monospace; font-size: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .mp { color: var(--red); } .mc { color: var(--orange); } .mf { color: var(--gold); }
+
+  .principles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px; margin-bottom: 40px; }
+  .principle-card { background: var(--graphite); padding: 26px 28px; display: flex; gap: 18px; }
+  .principle-icon { font-size: 26px; flex-shrink: 0; line-height: 1; padding-top: 2px; }
+  .principle-title { font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 6px; }
+  .principle-text { font-size: 12px; color: var(--silver); line-height: 1.65; }
+
+  .meal-tabs { display: flex; gap: 2px; margin-bottom: 3px; }
+  .meal-tab { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; padding: 10px 20px; background: var(--graphite); color: var(--muted); border: none; cursor: pointer; transition: all 0.15s; }
+  .meal-tab:hover { background: var(--steel); color: var(--silver); }
+  .meal-tab.active { background: var(--white); color: var(--black); }
+  .meal-day { display: none; }
+  .meal-day.active { display: block; }
+
+  .meals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+  .meal-card { background: var(--graphite); padding: 22px 24px; }
+  .meal-time { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.2em; color: var(--cyan); text-transform: uppercase; margin-bottom: 8px; }
+  .meal-name { font-size: 14px; font-weight: 500; color: var(--white); margin-bottom: 6px; line-height: 1.3; }
+  .meal-desc { font-size: 11px; color: var(--silver); line-height: 1.6; }
+  .meal-macros { display: flex; gap: 14px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--steel); }
+  .meal-total { background: var(--carbon); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .meal-total-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+  .meal-total-nums { display: flex; gap: 24px; }
+  .meal-total-val { font-family: 'Bebas Neue', sans-serif; font-size: 20px; }
+
+  .race-nutrition-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-bottom: 40px; }
+  .rn-cell { background: var(--graphite); padding: 20px 22px; }
+  .rn-time { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+  .rn-title { font-size: 13px; font-weight: 500; color: var(--white); margin-bottom: 5px; }
+  .rn-desc { font-size: 11px; color: var(--silver); line-height: 1.5; }
+
+  .supps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+  .supp-card { background: var(--graphite); padding: 20px 22px; }
+  .supp-name { font-size: 13px; font-weight: 500; color: var(--white); margin-bottom: 4px; }
+  .supp-dose { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--gold); letter-spacing: 0.1em; margin-bottom: 6px; }
+  .supp-why { font-size: 11px; color: var(--silver); line-height: 1.5; }
+
+  @media (max-width: 768px) {
+    .hero, .section { padding: 50px 20px; }
+    .phase-strip { margin: 0 20px 50px; grid-template-columns: 1fr 1fr; }
+    .week-card-header { grid-template-columns: 70px 1fr; padding: 18px 16px; }
+    .wk-volume, .wk-badge { display: none; }
+    .hero-accent { display: none; }
+    footer { flex-direction: column; gap: 8px; padding: 40px 20px 100px; }
+    .calorie-strip, .principles-grid, .meals-grid, .race-nutrition-grid, .supps-grid { grid-template-columns: 1fr; }
+    .week-body { padding: 4px 16px 24px; }
+    .day-row { grid-template-columns: 72px 1fr; gap: 12px; }
+    .section { padding: 50px 20px; }
+    body { padding-bottom: 80px; }
+
+    /* Bigger tap targets on mobile */
+    .week-card-header { min-height: 64px; }
+    .meal-tab { padding: 14px 16px; font-size: 10px; }
+    button { min-height: 44px; }
+  }
+
+  /* STICKY BOTTOM NAV */
+  .bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10,10,15,0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--steel);
+    z-index: 999;
+    padding: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .bottom-nav-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    height: 64px;
+  }
+  .nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 8px 4px;
+    transition: color 0.15s;
+    font-family: 'Space Mono', monospace;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-btn.active { color: var(--cyan); }
+  .nav-btn:active { color: var(--white); }
+  .nav-btn-icon { font-size: 20px; line-height: 1; }
+  .nav-btn-label { font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  @media (max-width: 768px) {
+    .bottom-nav { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero" id="nav-top">
+  <div class="hero-accent">13W</div>
+  <div class="hero-eyebrow">Ironman 70.3 Tremblant · Late June · Starting at Build I</div>
+  <h1 class="hero-title">
+    NO BASE PHASE.
+    <span>STRAIGHT TO WORK.</span>
+  </h1>
+  <p class="hero-sub">You've already built the base over the past 2 months. This 13-week plan skips the warmup and goes straight into threshold work across all 3 disciplines. 10 weeks of real training, 1 recovery week, 2-week taper. Race day late June.</p>
+</section>
+
+<!-- PHASE STRIP -->
+<div class="phase-strip">
+  <div class="phase-cell">
+    <div class="phase-weeks">Weeks 1–3</div>
+    <div class="phase-name" style="color:var(--orange)">BUILD I</div>
+    <div class="phase-desc">Introduce threshold intervals across all 3. Ramp from your current base. Brick runs start Week 1.</div>
+  </div>
+  <div class="phase-cell">
+    <div class="phase-weeks">Weeks 4–6</div>
+    <div class="phase-name" style="color:var(--red)">BUILD II</div>
+    <div class="phase-desc">Peak volume. Long ride 110–120km outside. Long run 18–20km. Highest training stress of the plan.</div>
+  </div>
+  <div class="phase-cell">
+    <div class="phase-weeks">Week 7</div>
+    <div class="phase-name" style="color:var(--green)">REST</div>
+    <div class="phase-desc">Non-negotiable. Volume drops 50%. You rebuild here.</div>
+  </div>
+  <div class="phase-cell">
+    <div class="phase-weeks">Weeks 8–10</div>
+    <div class="phase-name" style="color:var(--gold)">RACE-SPECIFIC</div>
+    <div class="phase-desc">Simulate race conditions. Longer bricks, race pace swim, nutrition practice locked in.</div>
+  </div>
+  <div class="phase-cell">
+    <div class="phase-weeks">Wks 11–13</div>
+    <div class="phase-name" style="color:var(--cyan)">TAPER</div>
+    <div class="phase-desc">Volume drops. Keep intensity. Arrive at start line sharp.</div>
+  </div>
+</div>
+
+<!-- TRAINING PLAN -->
+<section class="section" id="nav-training">
+  </div>
+  <p style="font-size:13px;color:var(--silver);margin-bottom:32px;max-width:600px;">Click any week to expand the full daily breakdown. Key sessions are highlighted in gold — these are the workouts that move the needle most.</p>
+
+  <div class="weeks-container">
+
+    <!-- WEEK 1 -->
+    <div class="week-card open reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 1</div>
+        <div class="wk-title">Build I begins — Threshold on all 3</div>
+        <div class="wk-volume">~9–10 hrs</div>
+        <div class="wk-badge badge-build1">Build I</div>
+      </div>
+      <div class="week-body">
+        <div class="key-session">
+          <div class="key-session-label">⚡ Key session this week</div>
+          <div class="key-session-text">Wednesday Zwift: 2×20min @ 170–175W. This is the foundation of your bike fitness gain. Non-negotiable every week.</div>
+        </div>
+        <div class="days-grid">
+          <div class="day-row">
+            <div class="day-label">Monday</div>
+            <div class="day-content">
+              <div class="workout-line"><span class="dot dg"></span>Strength 35min</div>
+              <div class="workout-note">Hip stability (single-leg deadlift, glute bridge), shoulder health (Y/T/W), planks. Last week doing full strength — starts dropping after Week 3.</div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Tuesday</div>
+            <div class="day-content">
+              <div class="workout-line"><span class="dot ds"></span>Swim 2200m — Threshold sets</div>
+              <div class="workout-note">400m warm-up, 6×200m @ 2:00/100m with 25s rest, 4×50m fast (1:50 pace), 200m cool-down. You can do this — your current 1:55 easy pace makes 2:00 threshold very achievable.</div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Wednesday</div>
+            <div class="day-content">
+              <div class="workout-line"><span class="dot db"></span>Zwift 80min — 2×20min FTP intervals</div>
+              <div class="workout-note">15min warm-up, 2×20min @ 170–175W (5min easy spin between), 10min cool-down. Cadence 88–95 RPM. This is your single biggest FTP driver.</div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Thursday</div>
+            <div class="day-content">
+              <div class="workout-line"><span class="dot db"></span>Bike 50min Z2 + <span class="dot dr" style="margin-left:8px"></span>Run 25min — BRICK</div>
+              <div class="workout-note">Bike @ 140–150W easy, immediately transition to run at 5:50/km. You're already doing bricks at 6:00/km — this is just adding structure. Target 5:45 by Week 3.</div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Friday</div>
+            <div class="day-content">
+              <div class="workout-line"><span class="dot ds"></span>Swim 1800m — Aerobic + Drills</div>
+              <div class="workout-note">Easy. Catch-up drill, fingertip drag. 8×100m @ 2:05. Focus on hip rotation and catch. Recovery swim — no intensity.</div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Saturday</div>
+            <div class="day-content">
+              <div class="workout-line"><span class="dot db"></span>Long Ride 95km (Outside if possible)</div>
+              <div class="workout-note">Steady Z2, avg 155–165W. Eat every 30min — gel or bar, 60g carbs/hr. 500ml fluid/hr. If Zwift, pick a hilly route. This is your anchor workout every week.</div>
+            </div>
+          </div>
+          <div class="day-row">
+            <div class="day-label">Sunday</div>
+            <div class="day-content">
+              <div class="workout-line"><span class="dot dr"></span>Long Run 13km — Easy</div>
+              <div class="workout-note">6:15–6:30/km. The first real long run of the plan. Don't go faster. This is aerobic base building for the run. Enjoy being outside.</div>
+            </div>
+          </div>
+        </div>
+        <div class="week-summary">
+          <div class="summary-cell"><div class="summary-label">Swim</div><div class="summary-val" style="color:var(--cyan)">4km</div></div>
+          <div class="summary-cell"><div class="summary-label">Bike</div><div class="summary-val" style="color:var(--orange)">145km</div></div>
+          <div class="summary-cell"><div class="summary-label">Run</div><div class="summary-val" style="color:var(--red)">38km</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 2 -->
+    <div class="week-card reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 2</div>
+        <div class="wk-title">Build I — Extend everything by 10%</div>
+        <div class="wk-volume">~10–11 hrs</div>
+        <div class="wk-badge badge-build1">Build I</div>
+      </div>
+      <div class="week-body">
+        <div class="key-session">
+          <div class="key-session-label">⚡ Key session this week</div>
+          <div class="key-session-text">Thursday Brick: 60min bike @ 155–165W + 30min run at 5:40/km. Your first real race-pace brick. This combo is where fitness jumps.</div>
+        </div>
+        <div class="days-grid">
+          <div class="day-row"><div class="day-label">Monday</div><div class="day-content"><div class="workout-line"><span class="dot dg"></span>Strength 30min + optional 20min easy walk</div><div class="workout-note">Maintenance only. Core, hips, shoulders.</div></div></div>
+          <div class="day-row"><div class="day-label">Tuesday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 2400m — Mixed threshold</div><div class="workout-note">400 warm-up, 4×300m @ 2:00/100m (30s rest), 4×100m @ 1:55 (20s rest), 200 cool-down. Push the 100s — these sharpen speed.</div></div></div>
+          <div class="day-row"><div class="day-label">Wednesday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Zwift 85min — 3×15min @ 170–180W</div><div class="workout-note">Slightly different format from last week. 3 shorter efforts with 5min rest. Easier to push harder. Build to 180W on the last interval.</div></div></div>
+          <div class="day-row"><div class="day-label">Thursday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Brick: Bike 60min + Run 30min</div><div class="workout-note">Bike @ 155–165W, run at 5:40/km. This is the first real brick at race effort. Your legs will feel heavy for the first 10min of the run — that's normal, push through it.</div></div></div>
+          <div class="day-row"><div class="day-label">Friday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 2000m — Easy</div><div class="workout-note">Easy aerobic. 10×100m @ 2:05. Let the body recover from Thursday.</div></div></div>
+          <div class="day-row"><div class="day-label">Saturday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Long Ride 100km OUTSIDE</div><div class="workout-note">Your first century of the plan. Easy-moderate effort, 160–168W avg. Eat the whole time. Hilly route is perfect for Tremblant prep.</div></div></div>
+          <div class="day-row"><div class="day-label">Sunday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Long Run 15km</div><div class="workout-note">Easy 6:20/km for 12km, then last 3km at 5:50/km. First taste of a progression long run.</div></div></div>
+        </div>
+        <div class="week-summary">
+          <div class="summary-cell"><div class="summary-label">Swim</div><div class="summary-val" style="color:var(--cyan)">4.4km</div></div>
+          <div class="summary-cell"><div class="summary-label">Bike</div><div class="summary-val" style="color:var(--orange)">160km</div></div>
+          <div class="summary-cell"><div class="summary-label">Run</div><div class="summary-val" style="color:var(--red)">45km</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 3 -->
+    <div class="week-card reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 3</div>
+        <div class="wk-title">Build I Peak — Hardest week yet</div>
+        <div class="wk-volume">~11–12 hrs</div>
+        <div class="wk-badge badge-build1">Build I</div>
+      </div>
+      <div class="week-body">
+        <div class="key-session">
+          <div class="key-session-label">⚡ Key session this week</div>
+          <div class="key-session-text">Saturday 105km outside + Sunday 16km run. Back-to-back long days. This combo builds race-specific fatigue resistance.</div>
+        </div>
+        <div class="days-grid">
+          <div class="day-row"><div class="day-label">Monday</div><div class="day-content"><div class="workout-line"><span class="dot dg"></span>Strength 25min — Maintenance only</div><div class="workout-note">After this week, strength drops to 1x/week max. Triathlon training IS your workout now.</div></div></div>
+          <div class="day-row"><div class="day-label">Tuesday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 2600m — Threshold race sets</div><div class="workout-note">500 warm-up, 5×300m @ 1:58/100m (25s rest), 4×50m sprint, 100m cool-down. Pushing the pace closer to race effort.</div></div></div>
+          <div class="day-row"><div class="day-label">Wednesday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Zwift 90min — 2×20min @ 175–182W</div><div class="workout-note">Try to hit 180W+ on both. This is the high-water mark of Build I. If you can do this, you're on track for 200W+ by race day.</div></div></div>
+          <div class="day-row"><div class="day-label">Thursday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Brick: Bike 70min + Run 30min</div><div class="workout-note">Bike @ 160–170W, run at 5:35–5:40/km. Longer brick this week. Practice T2 — lay out your kit and actually time the transition.</div></div></div>
+          <div class="day-row"><div class="day-label">Friday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest or 30min easy walk</div><div class="workout-note">Big weekend coming. Sleep 8–9hrs. Eat well. Prep nutrition for Saturday ride.</div></div></div>
+          <div class="day-row"><div class="day-label">Saturday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Long Ride 105km OUTSIDE</div><div class="workout-note">Hilly terrain. Avg 163–170W. 3 bottles minimum. Gel at 30min, every 30min after. This is the longest you've ridden this plan — nail the nutrition.</div></div></div>
+          <div class="day-row"><div class="day-label">Sunday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Long Run 16km</div><div class="workout-note">Easy 6:20/km. Yes, your legs will be tired from Saturday. That's the point — training race fatigue. Don't push the pace.</div></div></div>
+        </div>
+        <div class="week-summary">
+          <div class="summary-cell"><div class="summary-label">Swim</div><div class="summary-val" style="color:var(--cyan)">4.8km</div></div>
+          <div class="summary-cell"><div class="summary-label">Bike</div><div class="summary-val" style="color:var(--orange)">175km</div></div>
+          <div class="summary-cell"><div class="summary-val" style="color:var(--red)">46km</div><div class="summary-label">Run</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 4 -->
+    <div class="week-card reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 4</div>
+        <div class="wk-title">Build II — Volume climbs, outside riding locked in</div>
+        <div class="wk-volume">~12 hrs</div>
+        <div class="wk-badge badge-build2">Build II</div>
+      </div>
+      <div class="week-body">
+        <div class="key-session">
+          <div class="key-session-label">⚡ Key session this week</div>
+          <div class="key-session-text">Wednesday: 3×15min @ 180–188W. You're now in Build II territory. These efforts should feel hard but controlled — if you can still hold form at the end, you're doing it right.</div>
+        </div>
+        <div class="days-grid">
+          <div class="day-row"><div class="day-label">Monday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest</div><div class="workout-note">Strength is done for the week. Full rest Monday from now on during Build II.</div></div></div>
+          <div class="day-row"><div class="day-label">Tuesday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 2800m — Lactate sets</div><div class="workout-note">400 warm-up, 8×200m @ 1:56/100m (20s rest), 4×50m all-out, 200 cool-down. These 8×200s are tough. Start conservative on rep 1–3.</div></div></div>
+          <div class="day-row"><div class="day-label">Wednesday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Bike 95min — 3×15min @ 180–188W</div><div class="workout-note">Warm-up 20min, 3 intervals at 180–188W (10min easy between), cool-down 10min. Drop to 175W if form breaks down. Quality over ego.</div></div></div>
+          <div class="day-row"><div class="day-label">Thursday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 2000m Easy + <span class="dot db" style="margin-left:8px"></span>Brick 60min/25min</div><div class="workout-note">Morning: easy swim. Afternoon: bike 60min @ 160W then run 25min at 5:30/km. Two-a-day if you can manage it.</div></div></div>
+          <div class="day-row"><div class="day-label">Friday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest / Light stretch</div><div class="workout-note">Foam roll the quads and calves. You're accumulating fatigue — manage it.</div></div></div>
+          <div class="day-row"><div class="day-label">Saturday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Long Ride 110km OUTSIDE</div><div class="workout-note">Avg 165–172W. This is a proper training ride. Eat constantly. If you're not eating, you're falling behind. Simulate race fuelling exactly.</div></div></div>
+          <div class="day-row"><div class="day-label">Sunday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Long Run 17km</div><div class="workout-note">Easy 6:15/km for 13km, last 4km @ 5:45/km. Your longest run of the plan so far. Stay patient on the pace.</div></div></div>
+        </div>
+        <div class="week-summary">
+          <div class="summary-cell"><div class="summary-label">Swim</div><div class="summary-val" style="color:var(--cyan)">4.8km</div></div>
+          <div class="summary-cell"><div class="summary-label">Bike</div><div class="summary-val" style="color:var(--orange)">170km</div></div>
+          <div class="summary-cell"><div class="summary-label">Run</div><div class="summary-val" style="color:var(--red)">42km</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 5 -->
+    <div class="week-card reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 5</div>
+        <div class="wk-title">Build II — Push swim to 3km sessions</div>
+        <div class="wk-volume">~12–13 hrs</div>
+        <div class="wk-badge badge-build2">Build II</div>
+      </div>
+      <div class="week-body">
+        <div class="key-session">
+          <div class="key-session-label">⚡ Key session this week</div>
+          <div class="key-session-text">Tuesday: 1900m straight swim (race distance, no stops). First time doing it. Huge mental confidence builder. Just go easy and finish strong.</div>
+        </div>
+        <div class="days-grid">
+          <div class="day-row"><div class="day-label">Monday</div><div class="day-content"><div class="workout-line"><span class="dot dg"></span>Strength 30min (1x/week only)</div><div class="workout-note">Glute bridges 3×15, Copenhagen planks 3×20s, Y/T/W raises 3×12. That's it. Done.</div></div></div>
+          <div class="day-row"><div class="day-label">Tuesday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 3000m — Race sim + threshold</div><div class="workout-note">400 warm-up, 1900m STRAIGHT at easy-moderate pace (race sim!), 4×100m @ 1:52 (strong), 100 cool-down. The 1900m straight is the session. Just do it.</div></div></div>
+          <div class="day-row"><div class="day-label">Wednesday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Bike 90min — 2×25min @ 178–185W</div><div class="workout-note">Longer threshold efforts. 2×25min is harder than 2×20min — don't underestimate it. Fuel before this session.</div></div></div>
+          <div class="day-row"><div class="day-label">Thursday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Brick: Bike 75min + Run 30min</div><div class="workout-note">Bike @ 165–172W, run at 5:30/km. This is race pace run off race pace bike. Hard and important.</div></div></div>
+          <div class="day-row"><div class="day-label">Friday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 2000m — Easy recovery</div><div class="workout-note">Flush the body. Easy aerobic. No watch, just swim.</div></div></div>
+          <div class="day-row"><div class="day-label">Saturday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Long Ride 115km OUTSIDE</div><div class="workout-note">Avg 168–175W. Target at least one long climb to simulate Tremblant. Eat 65–70g carbs/hr. You should feel strong at the 80km mark — if you don't, you're not eating enough.</div></div></div>
+          <div class="day-row"><div class="day-label">Sunday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Long Run 18km</div><div class="workout-note">Easy 6:10–6:20/km. Last 3km at 5:40/km. You're close to half marathon distance now. Trust your run base.</div></div></div>
+        </div>
+        <div class="week-summary">
+          <div class="summary-cell"><div class="summary-label">Swim</div><div class="summary-val" style="color:var(--cyan)">5km</div></div>
+          <div class="summary-cell"><div class="summary-label">Bike</div><div class="summary-val" style="color:var(--orange)">190km</div></div>
+          <div class="summary-cell"><div class="summary-label">Run</div><div class="summary-val" style="color:var(--red)">48km</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 6 — PEAK -->
+    <div class="week-card reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 6</div>
+        <div class="wk-title">BUILD II PEAK — Highest volume week of the plan</div>
+        <div class="wk-volume">~13–14 hrs</div>
+        <div class="wk-badge badge-build2">Build II Peak</div>
+      </div>
+      <div class="week-body">
+        <div class="key-session">
+          <div class="key-session-label">⚡ Peak week — this is meant to be hard</div>
+          <div class="key-session-text">Saturday 120km + Sunday 20km run is your highest training stress. You'll feel tired all week. Sleep 9hrs, eat 3600+ kcal, and trust the process. Week 7 is rest.</div>
+        </div>
+        <div class="days-grid">
+          <div class="day-row"><div class="day-label">Monday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Full Rest</div><div class="workout-note">Big week ahead. Sleep extra. Eat well. No training.</div></div></div>
+          <div class="day-row"><div class="day-label">Tuesday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 3000m — Threshold</div><div class="workout-note">500 warm-up, 10×200m @ 1:57/100m (20s rest), 200 cool-down. These 10×200s are the hardest swim session of the plan. Pace discipline — don't go out too hot.</div></div></div>
+          <div class="day-row"><div class="day-label">Wednesday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Bike 100min — 3×20min @ 182–190W</div><div class="workout-note">Hardest bike session of the plan. 3×20 at near-FTP. This is where fitness is made. Eat 60g carbs before, drink during.</div></div></div>
+          <div class="day-row"><div class="day-label">Thursday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Brick: Bike 80min + Run 35min</div><div class="workout-note">Bike @ 170–178W, run at 5:25–5:30/km. Your longest brick. Race pace effort on both. This is a race simulation.</div></div></div>
+          <div class="day-row"><div class="day-label">Friday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 2000m — Easy + Sighting practice</div><div class="workout-note">If possible swim in open water. Practice bilateral breathing and sighting. Otherwise pool is fine — every 6 strokes, lift head and look forward.</div></div></div>
+          <div class="day-row"><div class="day-label">Saturday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Long Ride 120km OUTSIDE</div><div class="workout-note">Your peak ride. 170–178W avg. Hilly route. 4 bottles. 70g carbs/hr. If you finish this feeling like you could keep going, your nutrition worked. This is race-day confidence in a training ride.</div></div></div>
+          <div class="day-row"><div class="day-label">Sunday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Long Run 20km</div><div class="workout-note">Easy 6:15/km for 16km, last 4km @ 5:35/km. After 120km on the bike yesterday, this will feel hard. Do it easy and steady. Peak run of the plan — done.</div></div></div>
+        </div>
+        <div class="week-summary">
+          <div class="summary-cell"><div class="summary-label">Swim</div><div class="summary-val" style="color:var(--cyan)">5km</div></div>
+          <div class="summary-cell"><div class="summary-label">Bike</div><div class="summary-val" style="color:var(--orange)">200km</div></div>
+          <div class="summary-cell"><div class="summary-label">Run</div><div class="summary-val" style="color:var(--red)">55km</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 7 — RECOVERY -->
+    <div class="week-card reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 7</div>
+        <div class="wk-title">RECOVERY WEEK — Volume drops 50%. Non-negotiable.</div>
+        <div class="wk-volume">~6–7 hrs</div>
+        <div class="wk-badge badge-recovery">Recovery</div>
+      </div>
+      <div class="week-body">
+        <div class="key-session">
+          <div class="key-session-label">🛌 This week is not optional</div>
+          <div class="key-session-text">Your body gets stronger during rest, not during training. You will feel restless. That's a good sign — it means the training is working. Sleep 9hrs every night this week.</div>
+        </div>
+        <div class="days-grid">
+          <div class="day-row"><div class="day-label">Mon–Tue</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Full Rest both days</div><div class="workout-note">Walk if you need to move. That's it. No running, no biking, no guilt.</div></div></div>
+          <div class="day-row"><div class="day-label">Wednesday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 1800m — Very easy</div><div class="workout-note">Drills only. No intervals. Focus on feel and technique. No watch.</div></div></div>
+          <div class="day-row"><div class="day-label">Thursday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Zwift 50min — Z2 only</div><div class="workout-note">115–130W. Easy spin. No intensity. Flush the legs.</div></div></div>
+          <div class="day-row"><div class="day-label">Friday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Easy Run 30min</div><div class="workout-note">6:30–7:00/km. This is a recovery run, not training. Keep it short and enjoyable.</div></div></div>
+          <div class="day-row"><div class="day-label">Saturday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Easy Ride 65km Outside</div><div class="workout-note">Easy pace, flat route. Just enjoy being on the bike. 140–150W max.</div></div></div>
+          <div class="day-row"><div class="day-label">Sunday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Easy Run 10km</div><div class="workout-note">Slow and easy. Feel the freshness returning in your legs. You should feel noticeably better than last Sunday.</div></div></div>
+        </div>
+        <div class="week-summary">
+          <div class="summary-cell"><div class="summary-label">Swim</div><div class="summary-val" style="color:var(--cyan)">1.8km</div></div>
+          <div class="summary-cell"><div class="summary-label">Bike</div><div class="summary-val" style="color:var(--orange)">115km</div></div>
+          <div class="summary-cell"><div class="summary-label">Run</div><div class="summary-val" style="color:var(--red)">40km</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 8 -->
+    <div class="week-card reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 8</div>
+        <div class="wk-title">Race-Specific — Simulate race conditions</div>
+        <div class="wk-volume">~11–12 hrs</div>
+        <div class="wk-badge badge-specific">Race-Specific</div>
+      </div>
+      <div class="week-body">
+        <div class="key-session">
+          <div class="key-session-label">⚡ Key session this week</div>
+          <div class="key-session-text">Saturday: Full race simulation. Swim 1900m + T1 + Bike 90km + T2 + Run 10km. Do it with full race kit and race nutrition. This is your dress rehearsal.</div>
+        </div>
+        <div class="days-grid">
+          <div class="day-row"><div class="day-label">Monday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest</div></div></div>
+          <div class="day-row"><div class="day-label">Tuesday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 2800m — Race pace</div><div class="workout-note">400 warm-up, 1900m at race effort (test your 38–40min target), 500m cool-down. Time the 1900m — use this as a benchmark.</div></div></div>
+          <div class="day-row"><div class="day-label">Wednesday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Bike 90min — Race power efforts</div><div class="workout-note">2×20min @ 185–195W. You should be stronger than Week 1 — prove it here.</div></div></div>
+          <div class="day-row"><div class="day-label">Thursday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Brick: 90min Bike + 30min Run</div><div class="workout-note">Bike @ 175–185W (race pace), run at 5:20–5:25/km. Full race effort on both. Hard day. Fuelled well.</div></div></div>
+          <div class="day-row"><div class="day-label">Friday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest — Prep race sim kit</div><div class="workout-note">Lay out race gear. Prepare nutrition for Saturday. Sleep 9hrs.</div></div></div>
+          <div class="day-row"><div class="day-label">Saturday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>🎯 RACE SIM: Swim 1.9km + Bike 90km + Run 10km</div><div class="workout-note">Full race simulation with transitions. Wear your race kit. Use your race nutrition exactly. Start easy on the swim and bike — your run pace at the end tells you everything about your fitness.</div></div></div>
+          <div class="day-row"><div class="day-label">Sunday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Easy Run 12km</div><div class="workout-note">After the race sim, go easy. This flushes the legs and adds a bit of extra run volume.</div></div></div>
+        </div>
+        <div class="week-summary">
+          <div class="summary-cell"><div class="summary-label">Swim</div><div class="summary-val" style="color:var(--cyan)">5.6km</div></div>
+          <div class="summary-cell"><div class="summary-label">Bike</div><div class="summary-val" style="color:var(--orange)">180km</div></div>
+          <div class="summary-cell"><div class="summary-label">Run</div><div class="summary-val" style="color:var(--red)">52km</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEKS 9–10 condensed -->
+    <div class="week-card reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 9</div>
+        <div class="wk-title">Race-Specific — Sharpen race pace on all 3</div>
+        <div class="wk-volume">~11 hrs</div>
+        <div class="wk-badge badge-specific">Race-Specific</div>
+      </div>
+      <div class="week-body">
+        <div class="days-grid">
+          <div class="day-row"><div class="day-label">Monday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest</div></div></div>
+          <div class="day-row"><div class="day-label">Tuesday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 2600m — Speed work</div><div class="workout-note">400 warm-up, 4×400m @ 1:55/100m (30s rest), 8×50m sprint, 200 cool-down. Build pure speed — less volume, more intensity.</div></div></div>
+          <div class="day-row"><div class="day-label">Wednesday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Bike 85min — 4×10min @ 190–200W</div><div class="workout-note">Shorter sharper efforts at higher power. Get used to the discomfort of race effort without crushing your legs.</div></div></div>
+          <div class="day-row"><div class="day-label">Thursday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Brick: 75min @ race pace + 25min run @ 5:15/km</div><div class="workout-note">Aim for 5:15/km on the run — this is faster than your target race pace. If you can do it here off the bike, 5:25 on race day is very achievable.</div></div></div>
+          <div class="day-row"><div class="day-label">Friday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest</div></div></div>
+          <div class="day-row"><div class="day-label">Saturday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Long Ride 105km + 20min run</div><div class="workout-note">Ride 105km @ race effort, immediately run 20min at 5:25/km. Extended brick. Final long training day before taper begins.</div></div></div>
+          <div class="day-row"><div class="day-label">Sunday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Long Run 16km — Progression</div><div class="workout-note">10km easy, 4km @ 5:40, 2km @ 5:20. Practice running through fatigue at pace.</div></div></div>
+        </div>
+        <div class="week-summary">
+          <div class="summary-cell"><div class="summary-label">Swim</div><div class="summary-val" style="color:var(--cyan)">4.6km</div></div>
+          <div class="summary-cell"><div class="summary-label">Bike</div><div class="summary-val" style="color:var(--orange)">180km</div></div>
+          <div class="summary-cell"><div class="summary-label">Run</div><div class="summary-val" style="color:var(--red)">41km</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 10 -->
+    <div class="week-card reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 10</div>
+        <div class="wk-title">Race-Specific — Last hard week before taper</div>
+        <div class="wk-volume">~10–11 hrs</div>
+        <div class="wk-badge badge-specific">Race-Specific</div>
+      </div>
+      <div class="week-body">
+        <div class="key-session">
+          <div class="key-session-label">⚡ Last hard week — finish strong</div>
+          <div class="key-session-text">This is your final big training stimulus. After this, the taper begins and volume drops. Make it count but don't destroy yourself — you need to arrive at the taper healthy.</div>
+        </div>
+        <div class="days-grid">
+          <div class="day-row"><div class="day-label">Monday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest</div></div></div>
+          <div class="day-row"><div class="day-label">Tuesday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 2800m — Mixed speed</div><div class="workout-note">300 warm-up, 6×300m @ 1:54/100m, 6×50m sprint, 200 cool-down. You should be noticeably faster than Week 1. Check your 200m splits.</div></div></div>
+          <div class="day-row"><div class="day-label">Wednesday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Bike 90min — 2×20min @ 188–198W</div><div class="workout-note">If you can hit 195W+ here, you've gained serious power since you started. That's a ~25% FTP gain over 10 weeks — very realistic with consistent threshold work.</div></div></div>
+          <div class="day-row"><div class="day-label">Thursday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Brick: 60min race pace + Run 30min race pace</div><div class="workout-note">Full race pace efforts. This is the last hard brick of the plan. Nail the transition, run strong.</div></div></div>
+          <div class="day-row"><div class="day-label">Friday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 1800m easy</div><div class="workout-note">Recovery swim. Technique, not fitness. Rest up for the weekend.</div></div></div>
+          <div class="day-row"><div class="day-label">Saturday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Ride 95km — Moderate effort</div><div class="workout-note">Not a peak ride — controlled 170–178W. Last significant ride before taper. Enjoy it.</div></div></div>
+          <div class="day-row"><div class="day-label">Sunday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Run 14km — Easy to moderate</div><div class="workout-note">Last double-digit long run. 6:10/km easy. You're ready. The taper starts next week.</div></div></div>
+        </div>
+        <div class="week-summary">
+          <div class="summary-cell"><div class="summary-label">Swim</div><div class="summary-val" style="color:var(--cyan)">4.6km</div></div>
+          <div class="summary-cell"><div class="summary-label">Bike</div><div class="summary-val" style="color:var(--orange)">155km</div></div>
+          <div class="summary-cell"><div class="summary-label">Run</div><div class="summary-val" style="color:var(--red)">44km</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 11 — TAPER 1 -->
+    <div class="week-card reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 11</div>
+        <div class="wk-title">Taper Week 1 — Volume −40%, keep intensity</div>
+        <div class="wk-volume">~7–8 hrs</div>
+        <div class="wk-badge badge-taper">Taper</div>
+      </div>
+      <div class="week-body">
+        <div class="key-session">
+          <div class="key-session-label">🧘 Taper madness is real</div>
+          <div class="key-session-text">You will feel slow, heavy, and undertrained. You are none of those things. The fitness you built doesn't disappear in 3 weeks — it consolidates. Trust the taper.</div>
+        </div>
+        <div class="days-grid">
+          <div class="day-row"><div class="day-label">Monday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest</div></div></div>
+          <div class="day-row"><div class="day-label">Tuesday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Swim 2200m — Sharp sets</div><div class="workout-note">300 warm-up, 6×200m @ 1:52–1:55 (feel fast, not hard), 6×50m sprint, 200 cool-down. Keep the speed — cut the volume.</div></div></div>
+          <div class="day-row"><div class="day-label">Wednesday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Bike 60min — Race openers</div><div class="workout-note">20min Z2, 5×4min @ 190W (3min easy), 15min cool-down. Short and sharp. Feel fast.</div></div></div>
+          <div class="day-row"><div class="day-label">Thursday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Run 40min + strides</div><div class="workout-note">30min easy, 6×20sec strides at 5K pace. Legs should start feeling snappy. Good sign.</div></div></div>
+          <div class="day-row"><div class="day-label">Friday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest</div></div></div>
+          <div class="day-row"><div class="day-label">Saturday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Ride 70km — Race pace efforts</div><div class="workout-note">3×10min @ race power (190–200W). Confidence check. You should feel strong on these.</div></div></div>
+          <div class="day-row"><div class="day-label">Sunday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Run 10km — Easy</div><div class="workout-note">Easy, enjoyable. Last double-digit run before race week.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEEK 12 — TAPER 2 -->
+    <div class="week-card reveal">
+      <div class="week-card-header" onclick="toggleWeek(this)">
+        <div class="wk-num">WK 12</div>
+        <div class="wk-title">Taper Week 2 — Volume −60%, stay sharp</div>
+        <div class="wk-volume">~5–6 hrs</div>
+        <div class="wk-badge badge-taper">Taper</div>
+      </div>
+      <div class="week-body">
+        <div class="days-grid">
+          <div class="day-row"><div class="day-label">Mon–Tue</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest Monday</div><div class="workout-line"><span class="dot ds"></span>Swim 1800m — Very easy Tuesday</div><div class="workout-note">30min easy swim. No intervals. Just feel the water.</div></div></div>
+          <div class="day-row"><div class="day-label">Wednesday</div><div class="day-content"><div class="workout-line"><span class="dot db"></span>Bike 45min — 4×3min race pace</div><div class="workout-note">Easy spin with 4 short punchy efforts. Feel the power in your legs.</div></div></div>
+          <div class="day-row"><div class="day-label">Thursday</div><div class="day-content"><div class="workout-line"><span class="dot dr"></span>Run 25min with strides</div><div class="workout-note">Easy with 5 strides. Feel light and quick.</div></div></div>
+          <div class="day-row"><div class="day-label">Friday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>Rest — Travel to Tremblant</div><div class="workout-note">Drive up, check in, walk the run course. Calm, excited, ready.</div></div></div>
+          <div class="day-row"><div class="day-label">Saturday</div><div class="day-content"><div class="workout-line"><span class="dot ds"></span>Lake swim 20min + <span class="dot db" style="margin-left:8px"></span>Bike 20min + <span class="dot dr" style="margin-left:8px"></span>Run 10min</div><div class="workout-note">Shake-out in race kit. Easy effort. Scope T1/T2. Check your gear. Carb-load dinner: 150–200g carbs (pasta, rice, bread).</div></div></div>
+          <div class="day-row"><div class="day-label">Sunday</div><div class="day-content"><div class="workout-line"><span class="dot dx"></span>🏁 RACE DAY</div><div class="workout-note">Wake 5am. 500–600 kcal breakfast (oats, banana, toast). Coffee. Pre-race gel 15min before swim. Swim easy first 400m. Bike steady — eat from minute 20. Run smart — first 5km at pace, then build. Cross that finish line.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ======= NUTRITION SECTION ======= -->
+<section class="section" id="nav-nutrition">
+  <div class="section-header">
+    <span class="section-num">02 —</span>
+    <h2 class="section-title">NUTRITION PLAN</h2>
+  </div>
+  <p style="font-size:13px;color:var(--silver);max-width:600px;margin-bottom:40px;line-height:1.7;">Not strict, not boring. Enough structure to fuel 10–14hrs of training per week, hit 160–175g protein daily, and actually get lean from the inside out. One fun meal a week is built in — no guilt.</p>
+
+  <!-- CALORIE TARGETS -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.05em;margin-bottom:20px;">DAILY CALORIE TARGETS</h3>
+  <div class="calorie-strip reveal">
+    <div class="cal-card easy">
+      <div class="cal-type">Rest Day</div>
+      <div class="cal-num">2,100<span style="font-size:18px;color:var(--silver)"> kcal</span></div>
+      <div style="font-size:11px;color:var(--silver);margin-top:6px;">Low carbs, high protein. You're not training — don't fuel like you are.</div>
+      <div class="cal-macros">
+        <div class="cal-macro"><div class="cal-macro-val mp">165g</div><div class="cal-macro-lbl">Protein</div></div>
+        <div class="cal-macro"><div class="cal-macro-val mc">150g</div><div class="cal-macro-lbl">Carbs</div></div>
+        <div class="cal-macro"><div class="cal-macro-val mf">70g</div><div class="cal-macro-lbl">Fat</div></div>
+      </div>
+    </div>
+    <div class="cal-card normal">
+      <div class="cal-type">Normal Training Day</div>
+      <div class="cal-num">2,700<span style="font-size:18px;color:var(--silver)"> kcal</span></div>
+      <div style="font-size:11px;color:var(--silver);margin-top:6px;">Enough to train hard and recover. Still a ~300 kcal deficit at your activity level.</div>
+      <div class="cal-macros">
+        <div class="cal-macro"><div class="cal-macro-val mp">170g</div><div class="cal-macro-lbl">Protein</div></div>
+        <div class="cal-macro"><div class="cal-macro-val mc">290g</div><div class="cal-macro-lbl">Carbs</div></div>
+        <div class="cal-macro"><div class="cal-macro-val mf">75g</div><div class="cal-macro-lbl">Fat</div></div>
+      </div>
+    </div>
+    <div class="cal-card hard">
+      <div class="cal-type">Long Ride / Run Day</div>
+      <div class="cal-num">3,500<span style="font-size:18px;color:var(--silver)"> kcal</span></div>
+      <div style="font-size:11px;color:var(--silver);margin-top:6px;">Do NOT cut Saturday. Underfuelling a 3hr ride tanks recovery and raises cortisol — which holds fat.</div>
+      <div class="cal-macros">
+        <div class="cal-macro"><div class="cal-macro-val mp">170g</div><div class="cal-macro-lbl">Protein</div></div>
+        <div class="cal-macro"><div class="cal-macro-val mc">450g</div><div class="cal-macro-lbl">Carbs</div></div>
+        <div class="cal-macro"><div class="cal-macro-val mf">80g</div><div class="cal-macro-lbl">Fat</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINCIPLES -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.05em;margin-bottom:20px;">THE 6 RULES</h3>
+  <div class="principles-grid reveal">
+    <div class="principle-card">
+      <div class="principle-icon">🥩</div>
+      <div>
+        <div class="principle-title">160–175g protein every single day</div>
+        <div class="principle-text">This is the non-negotiable. At ~77kg doing 10–14hrs/week, 2.2g/kg protein preserves muscle while your body fat drops from the cardio. Miss your protein target and you'll look like a cardio bunny instead of an athlete. Chicken, salmon, eggs, Greek yogurt, cottage cheese, whey — rotate them all.</div>
+      </div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-icon">🍚</div>
+      <div>
+        <div class="principle-title">Time carbs around workouts, not random</div>
+        <div class="principle-text">Eat your biggest carb hits before and immediately after sessions. White rice, oats, banana, pasta, sweet potato — all fine. On rest days, cut carbs by 30–40% and let protein + fat fill the gap. You don't need 400g of carbs to sit on the couch.</div>
+      </div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-icon">😴</div>
+      <div>
+        <div class="principle-title">Sleep is your best fat-loss tool</div>
+        <div class="principle-text">8–9hrs non-negotiable. Poor sleep spikes cortisol which parks fat around your midsection. No diet trick beats it. The 6-pack you want is 60% training, 30% sleep, 10% diet discipline. Get off your phone at 10pm.</div>
+      </div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-icon">🍕</div>
+      <div>
+        <div class="principle-title">Saturday night is yours — earn it</div>
+        <div class="principle-text">After your long ride, eat whatever you want for dinner. Poutine, pizza, burgers, sushi. You've burned 1,200+ kcal on the bike and have a long run tomorrow — this is literally a refeed, not a cheat. One meal won't undo 13 weeks. Enjoy it mentally, not just physically.</div>
+      </div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-icon">🍺</div>
+      <div>
+        <div class="principle-title">Alcohol: max 2 drinks, never before a key session</div>
+        <div class="principle-text">1–2 drinks Friday or Saturday post-ride is fine. But alcohol tanks sleep quality for 2 nights, not one. Hard rule: zero alcohol Thursday (before Saturday long ride) and full race week. Everything else is your call.</div>
+      </div>
+    </div>
+    <div class="principle-card">
+      <div class="principle-icon">🏊</div>
+      <div>
+        <div class="principle-title">Race nutrition is a skill — train it every Saturday</div>
+        <div class="principle-text">Your gut needs to learn to absorb 60–70g carbs/hr while exercising. Start practising now on every long ride. Test gels, bars, bananas, rice cakes. Race day is NOT the time to try something new. If your stomach can handle it in training, it'll handle it at Tremblant.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAMPLE MEAL DAYS — SWAPPABLE -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.05em;margin-bottom:8px;">DAILY MEAL PLANNER</h3>
+  <p style="font-size:13px;color:var(--silver);margin-bottom:24px;line-height:1.7;max-width:520px;">Click the swap button on any meal to cycle through similar options. Totals update automatically.</p>
+
+  <div class="meal-tabs" style="margin-bottom:3px;">
+    <button class="meal-tab active" onclick="switchMeal('normal', this)">Normal Training Day</button>
+    <button class="meal-tab" onclick="switchMeal('hard', this)">Long Ride Day (Sat)</button>
+    <button class="meal-tab" onclick="switchMeal('rest', this)">Rest Day</button>
+  </div>
+
+  <div id="meal-planner-wrap">
+  <!-- JS renders meal cards here -->
+  </div>
+
+  <script>
+  const MEAL_DATA = {
+    normal: [
+      { time: "6:30am — Pre-workout", options: [
+        { name: "Banana + PB Toast + Iced Maple Latte", desc: "1 banana, 2 slices whole grain bread, 2 tbsp natural PB. Iced latte with a splash of maple syrup on the side.", p:16, c:72, f:12 },
+        { name: "Oatmeal + Maple + Iced Latte", desc: "80g rolled oats, 1 tbsp maple syrup, cinnamon, 250ml milk. Iced latte alongside. Slower carbs, great if you train later.", p:14, c:74, f:8 },
+        { name: "Rice Cakes + Almond Butter + Banana", desc: "4 rice cakes, 2 tbsp almond butter, 1 banana. Lighter on the stomach. Good if you're training within 45min.", p:10, c:65, f:14 }
+      ]},
+      { time: "9:00am — Post-workout", options: [
+        { name: "Greek Yogurt Power Bowl", desc: "400g 0% Greek yogurt, 80g granola, 1 cup mixed berries, 1 tbsp honey, 25g almonds. Make it the night before.", p:46, c:78, f:17 },
+        { name: "Protein Shake + 2 Eggs + Toast", desc: "1 scoop whey + 300ml milk, 2 scrambled eggs, 1 slice sourdough. Higher protein hit, lower carb.", p:52, c:42, f:16 },
+        { name: "Overnight Oats + Berries", desc: "80g oats soaked overnight in 250ml milk, topped with 200g Greek yogurt, berries. Meal-prep friendly.", p:32, c:82, f:10 }
+      ]},
+      { time: "12:30pm — Lunch", options: [
+        { name: "Chicken Rice Bowl", desc: "200g grilled chicken breast, 200g white rice, roasted veg, ½ avocado, sriracha. Meal-prep 3 days ahead.", p:52, c:72, f:14 },
+        { name: "Ground Turkey Taco Bowl", desc: "200g ground turkey, rice, black beans, salsa, lime. One pan, 10 min. Tastes nothing like diet food.", p:54, c:68, f:12 },
+        { name: "Turkey Wrap + Side Salad", desc: "Large whole grain wrap, 180g sliced turkey breast, lettuce, tomato, mustard, cheese. Big salad on the side.", p:50, c:55, f:14 },
+        { name: "Greek Chicken Bowl", desc: "Marinated chicken thighs (lemon+oregano), rice, cucumber, tomato, tzatziki. Best meal prep of the plan.", p:55, c:65, f:16 }
+      ]},
+      { time: "3:30pm — Snack", options: [
+        { name: "Protein Shake + Apple", desc: "1 scoop whey + 300ml oat milk. Apple on the side. Keeps hunger in check before dinner.", p:36, c:38, f:6 },
+        { name: "Greek Yogurt + Berries", desc: "250g 0% Greek yogurt, blueberries, 1 tsp honey. No granola at snack time — save carbs for dinner.", p:24, c:22, f:1 },
+        { name: "Rice Cakes + Peanut Butter + Protein Bar", desc: "3 rice cakes, 2 tbsp PB, 1 Quest bar. Good if you have a second session later.", p:38, c:55, f:18 }
+      ]},
+      { time: "7:00pm — Dinner", options: [
+        { name: "Chicken + Rice Pouch + Frozen Broccoli", desc: "Pre-cooked chicken strips, 90s microwave rice, microwaved frozen broccoli. Sriracha or soy sauce. 8 minutes total.", p:52, c:55, f:8 },
+        { name: "Pasta Bolognese", desc: "200g dry pasta, 200g extra-lean ground beef, jarred tomato sauce, parmesan. Classic. 20 minutes.", p:54, c:90, f:16 },
+        { name: "Shrimp Stir-Fry + Noodles", desc: "200g frozen shrimp, garlic, soy sauce, sesame oil, frozen veg mix, rice noodles. 10 minutes.", p:44, c:65, f:10 },
+        { name: "Steak + Sweet Potato + Asparagus", desc: "200g sirloin pan-seared, sweet potato mash, roasted asparagus. Restaurant quality, 25 min.", p:50, c:48, f:18 },
+        { name: "Turkey Meatballs + Quinoa", desc: "Baked turkey meatballs, quinoa, marinara sauce. Batch-friendly — make 20, freeze half.", p:52, c:60, f:14 }
+      ]},
+      { time: "9:30pm — Before Bed", options: [
+        { name: "Greek Yogurt (0%) + Berries", desc: "200g plain 0% Greek yogurt, handful of berries, cinnamon. Slow protein overnight. No granola, no honey.", p:20, c:12, f:0 },
+        { name: "Casein Protein Shake", desc: "1 scoop casein + water. Zero fuss. Exactly the same effect as yogurt if you're not hungry.", p:24, c:4, f:1 },
+        { name: "Quark + Berries", desc: "200g quark (find it at IGA or Whole Foods), berries. Higher protein than yogurt, very mild taste.", p:26, c:10, f:0 }
+      ]}
+    ],
+    hard: [
+      { time: "6:30am — Pre-ride", options: [
+        { name: "Oatmeal + Banana + Maple + Iced Latte", desc: "100g rolled oats, 1 banana, 1 tbsp maple syrup, 250ml milk. Iced latte alongside. 600 kcal of slow carbs. Eat 90min before clipping in.", p:18, c:108, f:10 },
+        { name: "Big PB Toast + 2 Bananas + Iced Latte", desc: "3 slices whole grain, 3 tbsp PB, 2 bananas. Quick if you're in a rush. Same carb target.", p:20, c:100, f:18 },
+        { name: "Pancakes + Maple Syrup + Eggs", desc: "3 protein pancakes (pancake mix + 1 scoop whey), 2 tbsp maple syrup, 2 eggs on the side. Weekend version.", p:36, c:95, f:14 }
+      ]},
+      { time: "During Ride — On the Bike", options: [
+        { name: "Gels + Electrolytes (60–70g carbs/hr)", desc: "1 gel every 30min starting at 20min. 2 bottles electrolytes per hour. Standard race-simulation protocol.", p:0, c:180, f:0 },
+        { name: "Bars + Banana + Electrolytes", desc: "½ bar every 20min + 1 banana at 60min mark. Real food option. Test your stomach on training rides.", p:8, c:180, f:10 }
+      ]},
+      { time: "Post-ride ~11am", options: [
+        { name: "Recovery Shake + Toast + Jam", desc: "40g whey + 300ml milk + banana blended. 2 slices toast with jam. Hit this within 30min of finishing.", p:48, c:80, f:8 },
+        { name: "Chocolate Milk + Rice + Chicken", desc: "500ml chocolate milk immediately, then chicken rice bowl 30min later. Chocolate milk is legitimately one of the best recovery drinks.", p:52, c:90, f:12 }
+      ]},
+      { time: "1:00pm — Lunch", options: [
+        { name: "Pasta + Ground Beef + Tomato Sauce", desc: "200g dry pasta, 200g extra-lean ground beef, jarred tomato sauce, parmesan. Fast and perfect post-ride macros.", p:55, c:130, f:18 },
+        { name: "Big Chicken Rice Bowl x1.5", desc: "300g chicken, 300g rice, lots of veg. Same as the weekday bowl but bigger. You earned it.", p:70, c:108, f:16 }
+      ]},
+      { time: "4:00pm — Snack", options: [
+        { name: "Rice Cakes + Almond Butter + Protein Bar", desc: "3 rice cakes, 2 tbsp almond butter, 1 Quest bar. Pre-loading for Sunday's long run.", p:30, c:55, f:18 },
+        { name: "Banana + Greek Yogurt + Granola", desc: "1 banana, 250g Greek yogurt, 50g granola. Simple and satisfying mid-afternoon.", p:28, c:62, f:8 }
+      ]},
+      { time: "7:00pm — THE FUN MEAL", options: [
+        { name: "Whatever you want — you earned it 🎉", desc: "Pizza, poutine, burgers, ramen, sushi, tacos. You burned 1,200–1,500 kcal today. Eat it without guilt.", p:30, c:120, f:30 }
+      ]}
+    ],
+    rest: [
+      { time: "8:30am — Breakfast", options: [
+        { name: "Eggs + Avocado Toast + Iced Maple Latte", desc: "3 whole eggs + 2 whites scrambled, 2 slices sourdough, ½ avocado, cherry tomatoes. Iced maple latte alongside.", p:40, c:40, f:28 },
+        { name: "Omelette + Toast", desc: "4-egg omelette with peppers, onions, cheese. 1 slice sourdough. High protein, lower carb, very filling.", p:38, c:28, f:22 },
+        { name: "Greek Yogurt Bowl + Fruit + Iced Latte", desc: "400g Greek yogurt, berries, 1 tbsp honey, no granola. Lighter option if you're not that hungry.", p:34, c:35, f:2 }
+      ]},
+      { time: "12:30pm — Lunch", options: [
+        { name: "Turkey Wrap + Side Salad", desc: "Whole grain wrap, 180g turkey breast, lettuce, tomato, mustard, cheese. Big salad with olive oil.", p:50, c:45, f:18 },
+        { name: "Tuna + Sweet Potato + Greens", desc: "2 cans tuna, microwaved sweet potato, big salad. Zero cooking. Omega-3s without the salmon.", p:48, c:42, f:8 },
+        { name: "Rotisserie Chicken + Salad", desc: "200g rotisserie breast, massive salad, olive oil + lemon, 1 slice bread. Lowest effort high-protein lunch.", p:52, c:20, f:14 }
+      ]},
+      { time: "3:30pm — Snack", options: [
+        { name: "Greek Yogurt + Berries", desc: "250g 0% Greek yogurt, blueberries, 1 tsp honey. No granola on rest days.", p:24, c:22, f:1 },
+        { name: "Hard Boiled Eggs + Apple", desc: "3 hard boiled eggs, 1 apple. Super simple. High protein, zero prep.", p:20, c:25, f:14 }
+      ]},
+      { time: "7:00pm — Dinner", options: [
+        { name: "Steak + Roasted Veg (No Starch)", desc: "200g sirloin, large portion roasted veg with olive oil + garlic. No potato tonight — rest day means lower carbs.", p:52, c:20, f:22 },
+        { name: "Chicken Thighs + Roasted Root Veg", desc: "Bone-in thighs roasted at 425°F, cubed sweet potato + carrots alongside. Hands-off, 35 min.", p:50, c:30, f:20 },
+        { name: "Beef + Veggie Chili", desc: "Extra-lean ground beef, kidney beans, diced tomatoes, chili powder. Batch cook Sunday, reheat all week.", p:48, c:35, f:14 }
+      ]},
+      { time: "9:30pm — Before Bed", options: [
+        { name: "Greek Yogurt (0%) + Berries", desc: "200g plain Greek yogurt, berries, cinnamon. No granola, no honey on rest days.", p:20, c:12, f:0 },
+        { name: "Casein Protein Shake", desc: "1 scoop casein + water. Zero fuss version.", p:24, c:4, f:1 },
+        { name: "Quark + Berries", desc: "200g quark, berries. Higher protein, mild taste.", p:26, c:10, f:0 }
+      ]}
+    ]
+  };
+
+  let selectedMeals = { normal: {}, hard: {}, rest: {} };
+  let currentDay = 'normal';
+
+  function getMealIdx(day, slotIdx) {
+    return selectedMeals[day][slotIdx] || 0;
+  }
+
+  function swapMeal(day, slotIdx) {
+    const opts = MEAL_DATA[day][slotIdx].options;
+    selectedMeals[day][slotIdx] = ((getMealIdx(day, slotIdx) + 1) % opts.length);
+    renderMeals(day);
+  }
+
+  function calcTotals(day) {
+    let p=0,c=0,f=0;
+    MEAL_DATA[day].forEach((slot, i) => {
+      const m = slot.options[getMealIdx(day, i)];
+      p += m.p; c += m.c; f += m.f;
+    });
+    const kcal = p*4 + c*4 + f*9;
+    return {p,c,f,kcal};
+  }
+
+  function renderMeals(day) {
+    const slots = MEAL_DATA[day];
+    const totals = calcTotals(day);
+    let html = '<div class="meals-grid" style="margin-bottom:0;">';
+    slots.forEach((slot, i) => {
+      const idx = getMealIdx(day, i);
+      const m = slot.options[idx];
+      const hasSwap = slot.options.length > 1;
+      html += `<div class="meal-card" style="position:relative;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">
+          <div class="meal-time">${slot.time}</div>
+          ${hasSwap ? `<button onclick="swapMeal('${day}', ${i})" style="background:var(--steel);border:none;color:var(--cyan);font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;padding:4px 8px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background 0.15s;" onmouseover="this.style.background='var(--muted)'" onmouseout="this.style.background='var(--steel)'">⇄ SWAP ${idx+1}/${slot.options.length}</button>` : ''}
+        </div>
+        <div class="meal-name">${m.name}</div>
+        <div class="meal-desc">${m.desc}</div>
+        <div class="meal-macros">
+          <div class="cal-macro"><div class="cal-macro-val mp" style="font-size:18px">${m.p}g</div><div class="cal-macro-lbl">PRO</div></div>
+          <div class="cal-macro"><div class="cal-macro-val mc" style="font-size:18px">${m.c}g</div><div class="cal-macro-lbl">CARB</div></div>
+          <div class="cal-macro"><div class="cal-macro-val mf" style="font-size:18px">${m.f}g</div><div class="cal-macro-lbl">FAT</div></div>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+    html += `<div class="meal-total">
+      <div class="meal-total-label">Day Total (live)</div>
+      <div class="meal-total-nums">
+        <div class="cal-macro"><div class="cal-macro-val mp meal-total-val">${totals.p}g</div><div class="cal-macro-lbl">Protein</div></div>
+        <div class="cal-macro"><div class="cal-macro-val mc meal-total-val">${totals.c}g</div><div class="cal-macro-lbl">Carbs</div></div>
+        <div class="cal-macro"><div class="cal-macro-val mf meal-total-val">${totals.f}g</div><div class="cal-macro-lbl">Fat</div></div>
+        <div class="cal-macro"><div class="cal-macro-val meal-total-val" style="color:var(--white)">${totals.kcal}</div><div class="cal-macro-lbl">kcal</div></div>
+      </div>
+    </div>`;
+    document.getElementById('meal-planner-wrap').innerHTML = html;
+  }
+
+  function switchMeal(day, btn) {
+    currentDay = day;
+    document.querySelectorAll('.meal-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderMeals(day);
+  }
+
+  // Initial render
+  renderMeals('normal');
+  </script>
+
+  <!-- MEAL OPTIONS -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.05em;margin:48px 0 8px;">MEAL OPTIONS</h3>
+  <p style="font-size:13px;color:var(--silver);margin-bottom:24px;max-width:560px;line-height:1.7;">Mix and match across the week. Easy ones are weeknight defaults — under 15 min. Harder ones are for when you actually feel like cooking. All hit ~45–55g protein per dinner.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:40px;" class="reveal">
+    <div style="background:var(--graphite);padding:28px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.25em;color:var(--green);text-transform:uppercase;margin-bottom:20px;">⚡ Easy — Under 15 min</div>
+      <div style="display:flex;flex-direction:column;gap:0;">
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Chicken + Rice Pouch + Frozen Broccoli</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">90s microwave rice, air-fry or microwave pre-cooked chicken strips, dump frozen broccoli in microwave. Sriracha or soy sauce. Done in 8 minutes. Your staple weeknight meal — make peace with it.</div>
+        </div>
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Ground Turkey Taco Bowl</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">Brown 200g extra-lean ground turkey (7min), season with cumin + chili powder, serve over rice with salsa, black beans, lime. High protein, fun macros, takes one pan.</div>
+        </div>
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Tuna + Sweet Potato + Greens</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">2 cans tuna (drained), microwave sweet potato (5min), big handful of greens with olive oil + lemon. Zero cooking skill required. Omega-3s without the salmon.</div>
+        </div>
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Egg White Scramble + Toast</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">6 egg whites + 2 whole eggs scrambled, 2 slices sourdough, sliced tomatoes. Quick and cheap. Good on low-appetite evenings after a hard session when heavy food sounds awful.</div>
+        </div>
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Rotisserie Chicken + Anything</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">Grab a rotisserie chicken from IGA or Metro. Pull 200g of breast meat. Pair with whatever starch and veg you have. The laziest high-protein meal there is — and it's actually good.</div>
+        </div>
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Shrimp Stir-Fry + Noodles</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">200g frozen shrimp (thaw in 5min under cold water), stir-fry with garlic, soy sauce, sesame oil, frozen veg mix. Serve over rice noodles. 10 minutes total.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="background:var(--graphite);padding:28px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.25em;color:var(--orange);text-transform:uppercase;margin-bottom:20px;">🔥 Harder — Weekend cooking, worth it</div>
+      <div style="display:flex;flex-direction:column;gap:0;">
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Beef + Veggie Chili (Batch Cook)</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">500g extra-lean ground beef, 2 cans kidney beans, can of diced tomatoes, onion, garlic, chili powder. Simmer 30min. Makes 4–5 meals. Freeze half. High protein, high fibre, stupid easy to reheat.</div>
+        </div>
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Chicken Thighs + Roasted Root Veg</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">Season bone-in chicken thighs with garlic + paprika + olive oil. Roast at 425°F for 35min alongside cubed sweet potato and carrots. Hands-off cooking. Makes great leftovers for lunch.</div>
+        </div>
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Pasta Bolognese (The Post-Long-Ride Classic)</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">200g dry pasta, 200g extra-lean ground beef, jarred tomato sauce, parmesan. 20min total. This is your Saturday night go-to before the fun meal — high carb, high protein, crowd pleaser.</div>
+        </div>
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Turkey Meatballs + Quinoa + Sauce</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">Mix 400g ground turkey with egg, breadcrumbs, garlic, Italian seasoning. Roll into balls, bake 20min at 400°F. Serve over quinoa with marinara. Batch-friendly — make 20 meatballs, freeze half.</div>
+        </div>
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Steak + Sweet Potato Mash + Asparagus</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">200g sirloin or flank steak, pan-seared 3–4min per side. Mash sweet potato with a bit of butter. Roast asparagus 10min. Restaurant quality, 25 minutes. Good Saturday dinner when you want real food.</div>
+        </div>
+
+        <div style="border-top:1px solid var(--steel);padding:14px 0;">
+          <div style="font-size:13px;font-weight:500;color:var(--white);margin-bottom:3px;">Greek Chicken Bowl (Meal Prep King)</div>
+          <div style="font-size:11px;color:var(--silver);line-height:1.6;">Marinate chicken thighs in lemon + garlic + oregano + olive oil overnight. Grill or bake. Serve over rice with cucumber, tomatoes, red onion, tzatziki. Makes 4 lunches or dinners at once — best meal prep of the plan.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- DAILY STAPLE NOTE -->
+  <div style="background:var(--graphite);border-left:3px solid var(--gold);padding:20px 24px;margin-bottom:48px;display:flex;gap:16px;align-items:flex-start;" class="reveal">
+    <div style="font-size:24px;flex-shrink:0;">☕</div>
+    <div>
+      <div style="font-size:14px;font-weight:500;color:var(--white);margin-bottom:6px;">Daily Non-Negotiable: Iced Latte with Maple</div>
+      <div style="font-size:12px;color:var(--silver);line-height:1.65;">Keep it. One iced latte with a small pour of maple syrup is ~150–200 kcal and genuinely makes life worth living when you're training 12hrs/week. It's already factored into your daily targets. Use oat milk or 2% — both fine. Just don't make it a large double-double with extra maple three times a day and you're good.</div>
+    </div>
+  </div>
+
+  <!-- GROCERY LIST -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.05em;margin:0 0 8px;" id="nav-grocery">GROCERY LIST</h3>
+  <p style="font-size:13px;color:var(--silver);margin-bottom:24px;line-height:1.7;max-width:560px;">One week of groceries for the full plan. Copy the list below straight into Instacart — it's formatted so you can paste each section as a search.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:8px;" class="reveal">
+
+    <div style="background:var(--graphite);padding:24px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--red);text-transform:uppercase;margin-bottom:14px;">🥩 Proteins</div>
+      <div style="font-size:12px;color:var(--silver);line-height:2;">
+        Chicken breast (1kg)<br>
+        Ground turkey extra-lean (500g)<br>
+        Ground beef extra-lean 93% (500g)<br>
+        Sirloin steak (400g)<br>
+        Shrimp frozen (400g)<br>
+        Tuna canned in water (6 cans)<br>
+        Eggs (18 pack)<br>
+        Turkey breast sliced deli (300g)<br>
+        Whey protein powder<br>
+        Rotisserie chicken (1, weekly)
+      </div>
+    </div>
+
+    <div style="background:var(--graphite);padding:24px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--orange);text-transform:uppercase;margin-bottom:14px;">🍚 Carbs + Starches</div>
+      <div style="font-size:12px;color:var(--silver);line-height:2;">
+        White rice (2kg bag)<br>
+        90-second microwave rice pouches (4 pack)<br>
+        Rolled oats (1kg)<br>
+        Whole grain bread (1 loaf)<br>
+        Sourdough bread (1 loaf)<br>
+        Sweet potatoes (4–5 large)<br>
+        Pasta (500g)<br>
+        Whole grain wraps (pack of 8)<br>
+        Quinoa (500g)<br>
+        Rice cakes (plain, 1 pack)<br>
+        Bananas (bunch of 8–10)<br>
+        Granola (low sugar, 400g)
+      </div>
+    </div>
+
+    <div style="background:var(--graphite);padding:24px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--cyan);text-transform:uppercase;margin-bottom:14px;">🥗 Dairy + Fridge</div>
+      <div style="font-size:12px;color:var(--silver);line-height:2;">
+        Greek yogurt 0% plain (2kg tub)<br>
+        Oat milk (1L)<br>
+        2% milk (1L)<br>
+        Cheddar cheese (200g block)<br>
+        Natural peanut butter (500g)<br>
+        Natural almond butter (250g)<br>
+        Avocados (4)<br>
+        Jarred tomato sauce (2 jars)<br>
+        Salsa (1 jar)<br>
+        Tzatziki (1 tub)<br>
+        Mustard<br>
+        Sriracha
+      </div>
+    </div>
+
+    <div style="background:var(--graphite);padding:24px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--green);text-transform:uppercase;margin-bottom:14px;">🥦 Produce + Veg</div>
+      <div style="font-size:12px;color:var(--silver);line-height:2;">
+        Broccoli frozen (1kg bag)<br>
+        Mixed stir-fry veg frozen (1kg bag)<br>
+        Baby spinach (300g bag)<br>
+        Cherry tomatoes (1 pint)<br>
+        Cucumber (2)<br>
+        Red onion (2)<br>
+        Bell peppers (4)<br>
+        Asparagus (1 bunch)<br>
+        Garlic (1 head)<br>
+        Lemons (4)<br>
+        Mixed berries frozen (1kg bag)<br>
+        Blueberries fresh (1 pint)
+      </div>
+    </div>
+
+    <div style="background:var(--graphite);padding:24px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;">🏃 Training + Pantry</div>
+      <div style="font-size:12px;color:var(--silver);line-height:2;">
+        Energy gels (box of 24 — test brands)<br>
+        Electrolyte tablets or powder<br>
+        Protein bars Quest or similar (box)<br>
+        Kidney beans canned (2 cans)<br>
+        Black beans canned (2 cans)<br>
+        Diced tomatoes canned (2 cans)<br>
+        Olive oil (1L)<br>
+        Soy sauce<br>
+        Sesame oil (small bottle)<br>
+        Honey (pure maple OK too)<br>
+        Maple syrup (small bottle — latte)<br>
+        Creatine monohydrate (500g)<br>
+        Vitamin D3 supplements
+      </div>
+    </div>
+
+    <div style="background:var(--graphite);padding:24px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--silver);text-transform:uppercase;margin-bottom:14px;">🧂 Spices + Basics</div>
+      <div style="font-size:12px;color:var(--silver);line-height:2;">
+        Chili powder<br>
+        Cumin<br>
+        Paprika (smoked)<br>
+        Italian seasoning<br>
+        Garlic powder<br>
+        Onion powder<br>
+        Cinnamon<br>
+        Black pepper<br>
+        Salt (kosher)<br>
+        Breadcrumbs (panko)<br>
+        Parmesan cheese (grated)<br>
+        Cooking spray
+      </div>
+    </div>
+
+  </div>
+
+  <!-- INSTACART IMPORT BUTTON -->
+  <div style="background:var(--graphite);padding:28px;margin-bottom:48px;display:flex;flex-direction:column;gap:16px;" class="reveal">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.05em;line-height:1;margin-bottom:6px;">IMPORT TO INSTACART</div>
+        <div style="font-size:12px;color:var(--silver);line-height:1.6;max-width:480px;">Tap the button → open Instacart → tap <strong style="color:var(--white)">Lists → + → Paste from text</strong> → paste. Every item lands in your cart automatically. IGA, Metro, and Maxi all work.</div>
+      </div>
+      <button id="copyBtn" onclick="copyGroceryList()" style="background:var(--cyan);color:var(--black);border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.1em;padding:14px 32px;cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0;">
+        📋 COPY LIST FOR INSTACART
+      </button>
+    </div>
+    <div id="copyFeedback" style="display:none;font-family:'Space Mono',monospace;font-size:10px;color:var(--green);letter-spacing:0.15em;">
+      ✓ COPIED — open Instacart → Lists → + → Paste from text
+    </div>
+  </div>
+
+  <script>
+  function copyGroceryList() {
+    const list = `Chicken breast 1kg
+Ground turkey extra-lean 500g
+Ground beef extra-lean 93% 500g
+Sirloin steak 400g
+Shrimp frozen 400g
+Tuna canned in water 6 cans
+Eggs 18 pack
+Turkey breast sliced deli 300g
+Whey protein powder
+Rotisserie chicken
+Greek yogurt 0% plain 2kg tub
+Oat milk 1L
+2% milk 1L
+Cheddar cheese 200g
+Natural peanut butter 500g
+Natural almond butter 250g
+Avocados 4
+Jarred tomato sauce 2 jars
+Salsa 1 jar
+Tzatziki 1 tub
+Mustard
+Sriracha
+White rice 2kg
+Microwave rice pouches 4 pack
+Rolled oats 1kg
+Whole grain bread 1 loaf
+Sourdough bread 1 loaf
+Sweet potatoes 5
+Pasta 500g
+Whole grain wraps pack of 8
+Quinoa 500g
+Rice cakes plain 1 pack
+Bananas bunch of 10
+Granola low sugar 400g
+Broccoli frozen 1kg bag
+Mixed stir-fry vegetables frozen 1kg bag
+Baby spinach 300g bag
+Cherry tomatoes 1 pint
+Cucumber 2
+Red onion 2
+Bell peppers 4
+Asparagus 1 bunch
+Garlic 1 head
+Lemons 4
+Mixed berries frozen 1kg bag
+Blueberries fresh 1 pint
+Energy gels box of 24
+Electrolyte tablets
+Protein bars box
+Kidney beans canned 2 cans
+Black beans canned 2 cans
+Diced tomatoes canned 2 cans
+Olive oil 1L
+Soy sauce
+Sesame oil
+Honey
+Maple syrup
+Creatine monohydrate 500g
+Vitamin D3 supplements
+Chili powder
+Cumin
+Smoked paprika
+Italian seasoning
+Garlic powder
+Onion powder
+Cinnamon
+Black pepper
+Kosher salt
+Panko breadcrumbs
+Parmesan cheese grated
+Cooking spray`;
+
+    navigator.clipboard.writeText(list).then(() => {
+      const btn = document.getElementById('copyBtn');
+      const feedback = document.getElementById('copyFeedback');
+      btn.textContent = '✓ COPIED!';
+      btn.style.background = 'var(--green)';
+      feedback.style.display = 'block';
+      setTimeout(() => {
+        btn.textContent = '📋 COPY LIST FOR INSTACART';
+        btn.style.background = 'var(--cyan)';
+      }, 3000);
+    }).catch(() => {
+      // Fallback: select text from a hidden textarea
+      const ta = document.createElement('textarea');
+      ta.value = list;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      const btn = document.getElementById('copyBtn');
+      const feedback = document.getElementById('copyFeedback');
+      btn.textContent = '✓ COPIED!';
+      btn.style.background = 'var(--green)';
+      feedback.style.display = 'block';
+      setTimeout(() => {
+        btn.textContent = '📋 COPY LIST FOR INSTACART';
+        btn.style.background = 'var(--cyan)';
+      }, 3000);
+    });
+  }
+  </script>
+
+  <!-- RACE NUTRITION -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.05em;margin:48px 0 20px;">RACE DAY NUTRITION</h3>
+  <div class="race-nutrition-grid reveal">
+    <div class="rn-cell">
+      <div class="rn-time" style="color:var(--cyan)">5:00am — Breakfast</div>
+      <div class="rn-title">500–600 kcal, 2hrs before swim</div>
+      <div class="rn-desc">Oatmeal + banana + 2 slices toast with PB + 500ml water. Same breakfast you've been testing in training. No surprises on race day.</div>
+    </div>
+    <div class="rn-cell">
+      <div class="rn-time" style="color:var(--cyan)">6:45am — Pre-swim</div>
+      <div class="rn-title">1 gel + 300ml electrolytes</div>
+      <div class="rn-desc">15min before the swim start. Tops up blood glucose. Your last solid fuel before 40min in the water.</div>
+    </div>
+    <div class="rn-cell">
+      <div class="rn-time" style="color:var(--orange)">On the bike</div>
+      <div class="rn-title">60–70g carbs/hr, 500ml fluid/hr</div>
+      <div class="rn-desc">Start eating at 20min. Gel every 30min + electrolytes. Aim for 2 bottles/hr. If you're not eating, you're falling behind. You've practised this every Saturday — execute it.</div>
+    </div>
+    <div class="rn-cell">
+      <div class="rn-time" style="color:var(--red)">On the run</div>
+      <div class="rn-title">Gel at T2 + every aid station</div>
+      <div class="rn-desc">Take a gel immediately at T2. Hit every aid station — cola + water from km 10 onwards if stomach allows. Walk the aid stations if needed. Don't be a hero.</div>
+    </div>
+  </div>
+
+  <!-- SUPPLEMENTS -->
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.05em;margin:0 0 20px;">SUPPLEMENTS — KEEP IT SIMPLE</h3>
+  <div class="supps-grid reveal">
+    <div class="supp-card">
+      <div class="supp-name">Whey Protein</div>
+      <div class="supp-dose">1–2 scoops/day</div>
+      <div class="supp-why">Hits your protein target conveniently. Take within 30min of any hard session. Don't overthink the brand.</div>
+    </div>
+    <div class="supp-card">
+      <div class="supp-name">Creatine Monohydrate</div>
+      <div class="supp-dose">5g every morning</div>
+      <div class="supp-why">Yes, even for endurance. Supports power output on threshold bike sessions. 5g/day, no loading phase needed. Cheap and backed by 30 years of research.</div>
+    </div>
+    <div class="supp-card">
+      <div class="supp-name">Vitamin D3 + K2</div>
+      <div class="supp-dose">2,000–4,000 IU/day</div>
+      <div class="supp-why">Montreal in spring means you're still D-deficient from winter. Supports immune function, bone health, testosterone. Take with breakfast (fat-soluble).</div>
+    </div>
+    <div class="supp-card">
+      <div class="supp-name">Electrolytes</div>
+      <div class="supp-dose">Any session over 60min</div>
+      <div class="supp-why">Sodium, magnesium, potassium. Cramping on the run is an electrolyte problem, not just hydration. Use in training every Saturday — don't discover you need them on race day.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Ironman 70.3 Tremblant · 13-Week Build Plan · April → Late June</p>
+  <p style="color:var(--red); letter-spacing:0.1em;">BASE IS DONE. NOW WE BUILD.</p>
+</footer>
+
+  function toggleWeek(header) {
+    header.parentElement.classList.toggle('open');
+  }
+  function switchMeal(id, btn) {
+    document.querySelectorAll('.meal-day').forEach(d => d.classList.remove('active'));
+    document.querySelectorAll('.meal-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('meal-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // ── PWA SETUP ──────────────────────────────────────────────
+  // Generate app icon via canvas
+  function makeIcon(size) {
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const ctx = c.getContext('2d');
+    // Background
+    ctx.fillStyle = '#0a0a0f';
+    const r = size * 0.22;
+    ctx.beginPath();
+    ctx.moveTo(r,0); ctx.lineTo(size-r,0); ctx.quadraticCurveTo(size,0,size,r);
+    ctx.lineTo(size,size-r); ctx.quadraticCurveTo(size,size,size-r,size);
+    ctx.lineTo(r,size); ctx.quadraticCurveTo(0,size,0,size-r);
+    ctx.lineTo(0,r); ctx.quadraticCurveTo(0,0,r,0);
+    ctx.closePath(); ctx.fill();
+    // Red accent bar
+    ctx.fillStyle = '#e8273c';
+    ctx.fillRect(0, size*0.62, size, size*0.08);
+    // "70.3" text
+    ctx.fillStyle = '#f0f0f8';
+    ctx.font = `bold ${size*0.32}px Arial Black, Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('70.3', size/2, size*0.38);
+    // Subtext
+    ctx.fillStyle = '#00d4ff';
+    ctx.font = `${size*0.1}px Arial`;
+    ctx.fillText('TREMBLANT', size/2, size*0.58);
+    return c.toDataURL('image/png');
+  }
+
+  // Set apple touch icon
+  const icon512 = makeIcon(512);
+  const icon192 = makeIcon(192);
+  document.getElementById('app-icon').href = icon512;
+
+  // Inject PWA manifest as blob
+  const manifest = {
+    name: "70.3 Tremblant Plan",
+    short_name: "70.3 Plan",
+    description: "13-week Ironman 70.3 training + nutrition plan",
+    start_url: "./",
+    display: "standalone",
+    background_color: "#0a0a0f",
+    theme_color: "#0a0a0f",
+    orientation: "portrait",
+    icons: [
+      { src: icon192, sizes: "192x192", type: "image/png", purpose: "any maskable" },
+      { src: icon512, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+    ]
+  };
+  const manifestBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  document.getElementById('pwa-manifest').href = URL.createObjectURL(manifestBlob);
+
+  // Register service worker for offline use
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+const CACHE = 'ironman-plan-v1';
+const FONTS = [
+  'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap'
+];
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FONTS).catch(()=>{})));
+  self.skipWaiting();
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));
+  self.clients.claim();
+});
+self.addEventListener('fetch', e => {
+  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => new Response('Offline', {status:503}))));
+});`;
+    const swBlob = new Blob([swCode], {type:'application/javascript'});
+    const swURL = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swURL).catch(()=>{});
+  }
+
+  // ── BOTTOM NAV SCROLL ─────────────────────────────────────
+  function navScrollTo(id) {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+</script>
+
+<!-- BOTTOM NAV (mobile only) -->
+<nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+  <div class="bottom-nav-inner">
+    <button class="nav-btn active" onclick="navScrollTo('nav-top')">
+      <span class="nav-btn-icon">🏠</span>
+      <span class="nav-btn-label">Home</span>
+    </button>
+    <button class="nav-btn" onclick="navScrollTo('nav-training')">
+      <span class="nav-btn-icon">🚴</span>
+      <span class="nav-btn-label">Training</span>
+    </button>
+    <button class="nav-btn" onclick="navScrollTo('nav-nutrition')">
+      <span class="nav-btn-icon">🍽️</span>
+      <span class="nav-btn-label">Nutrition</span>
+    </button>
+    <button class="nav-btn" onclick="navScrollTo('nav-grocery')">
+      <span class="nav-btn-icon">🛒</span>
+      <span class="nav-btn-label">Grocery</span>
+    </button>
+  </div>
+</nav>
+
+</body>
+</html>
