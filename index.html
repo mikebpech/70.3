@@ -111,8 +111,7 @@
   .key-session-text { font-size: 12px; color: var(--silver); line-height: 1.6; }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.5s, transform 0.5s; }
-  .reveal.visible { opacity: 1; transform: none; }
+  /* reveal disabled — all content shows immediately */
 
   footer { padding: 40px 60px; border-top: 1px solid var(--graphite); display: flex; justify-content: space-between; align-items: center; }
   footer p { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.15em; }
@@ -932,7 +931,7 @@
   <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.05em;margin:48px 0 8px;">MEAL OPTIONS</h3>
   <p style="font-size:13px;color:var(--silver);margin-bottom:24px;max-width:560px;line-height:1.7;">Mix and match across the week. Easy ones are weeknight defaults — under 15 min. Harder ones are for when you actually feel like cooking. All hit ~45–55g protein per dinner.</p>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:40px;" class="reveal">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:40px;" class="">
     <div style="background:var(--graphite);padding:28px;">
       <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.25em;color:var(--green);text-transform:uppercase;margin-bottom:20px;">⚡ Easy — Under 15 min</div>
       <div style="display:flex;flex-direction:column;gap:0;">
@@ -1009,7 +1008,7 @@
   </div>
 
   <!-- DAILY STAPLE NOTE -->
-  <div style="background:var(--graphite);border-left:3px solid var(--gold);padding:20px 24px;margin-bottom:48px;display:flex;gap:16px;align-items:flex-start;" class="reveal">
+  <div style="background:var(--graphite);border-left:3px solid var(--gold);padding:20px 24px;margin-bottom:48px;display:flex;gap:16px;align-items:flex-start;" class="">
     <div style="font-size:24px;flex-shrink:0;">☕</div>
     <div>
       <div style="font-size:14px;font-weight:500;color:var(--white);margin-bottom:6px;">Daily Non-Negotiable: Iced Latte with Maple</div>
@@ -1021,7 +1020,7 @@
   <h3 style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.05em;margin:0 0 8px;" id="nav-grocery">GROCERY LIST</h3>
   <p style="font-size:13px;color:var(--silver);margin-bottom:24px;line-height:1.7;max-width:560px;">One week of groceries for the full plan. Copy the list below straight into Instacart — it's formatted so you can paste each section as a search.</p>
 
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:8px;" class="reveal">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:8px;" class="">
 
     <div style="background:var(--graphite);padding:24px;">
       <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--red);text-transform:uppercase;margin-bottom:14px;">🥩 Proteins</div>
@@ -1133,7 +1132,7 @@
   </div>
 
   <!-- INSTACART IMPORT BUTTON -->
-  <div style="background:var(--graphite);padding:28px;margin-bottom:48px;display:flex;flex-direction:column;gap:16px;" class="reveal">
+  <div style="background:var(--graphite);padding:28px;margin-bottom:48px;display:flex;flex-direction:column;gap:16px;" class="">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
       <div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.05em;line-height:1;margin-bottom:6px;">IMPORT TO INSTACART</div>
@@ -1321,35 +1320,30 @@ Cooking spray`;
     document.getElementById('meal-' + id).classList.add('active');
     btn.classList.add('active');
   }
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-  }, { threshold: 0.08 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-
-  function navScrollTo(id) {
+  function navScrollTo(id, el) {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    el.classList.add('active');
+    const target = document.getElementById(id);
+    if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
   }
 </script>
 
 <!-- BOTTOM NAV (mobile only) -->
 <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
   <div class="bottom-nav-inner">
-    <button class="nav-btn active" onclick="navScrollTo('nav-top')">
+    <button class="nav-btn active" onclick="navScrollTo('nav-top', this)">
       <span class="nav-btn-icon">🏠</span>
       <span class="nav-btn-label">Home</span>
     </button>
-    <button class="nav-btn" onclick="navScrollTo('nav-training')">
+    <button class="nav-btn" onclick="navScrollTo('nav-training', this)">
       <span class="nav-btn-icon">🚴</span>
       <span class="nav-btn-label">Training</span>
     </button>
-    <button class="nav-btn" onclick="navScrollTo('nav-nutrition')">
+    <button class="nav-btn" onclick="navScrollTo('nav-nutrition', this)">
       <span class="nav-btn-icon">🍽️</span>
       <span class="nav-btn-label">Nutrition</span>
     </button>
-    <button class="nav-btn" onclick="navScrollTo('nav-grocery')">
+    <button class="nav-btn" onclick="navScrollTo('nav-grocery', this)">
       <span class="nav-btn-icon">🛒</span>
       <span class="nav-btn-label">Grocery</span>
     </button>
